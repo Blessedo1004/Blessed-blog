@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Livewire\PostList;
+
+Route::get('/', PostList::class)->name('home');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::view('dashboard', 'dashboard')->name('dashboard');
+});
+
+Route::get('/blog',PostList::class)->name('blog.index');
+Route::livewire('/blog/{slug}', 'pages::posts.show')->name('blog.show');
+
+Route::middleware('auth')->group(function(){
+    Route::livewire('/posts','pages::posts.index')
+    ->middleware('can:create posts')
+    ->name('posts.index');
+
+    Route::livewire('/posts/create', 'pages::posts.create')
+    ->middleware('can:create posts')
+    ->name('posts.create');
+
+    Route::livewire('/posts/{post}/edit', 'pages::posts.edit')
+    ->name('posts.edit');
+
+    Route::livewire('/users', 'pages::users.index')
+    ->name('users.index');
+
+    Route::livewire('users/create','pages::users.create')
+    ->middleware('can:manage users')
+    ->name('users.create');
+
+    Route::livewire('users/{user}/edit','pages::users.edit')
+    ->middleware('can:manage users')
+    ->name('users.edit');
+});  
+
+require __DIR__.'/settings.php';
