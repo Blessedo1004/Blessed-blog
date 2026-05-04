@@ -84,7 +84,7 @@
 
                             <div class="p-6">
                                 <div class="flex items-center text-sm text-gray-500 mb-3">
-                                    <span>{{ $post->published_at?->format('M d, Y') }}</span>
+                                    <span>{{ $post->published_at->format('M d, Y') }}</span>
                                     <span class="mx-2">•</span>
                                     <span>{{ $post->user->name }}</span>
                                     @if ($post->views_count > 0)

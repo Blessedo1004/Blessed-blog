@@ -12,7 +12,7 @@ new #[Layout('layouts.public')] class extends Component
     {
         $this->post = Post::where('slug', $slug)
             ->where('status', 'published')
-            ->with(['user'])
+            ->with(['user','categories','tags'])
             ->firstOrFail();
         // track views
         // $this->trackView();
@@ -37,6 +37,9 @@ new #[Layout('layouts.public')] class extends Component
 ?>
 
 <div>
+    <x-slot:title>
+        {{ $post->title }}
+    </x-slot:title>
     <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Back link -->
         <div class="mb-6">
@@ -64,7 +67,7 @@ new #[Layout('layouts.public')] class extends Component
                 </div>
             </div>
             <!-- Categories and Tags -->
-            {{-- <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-200">
+            <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-200">
                 <!-- Categories -->
                 @if($post->categories->count() > 0)
                     <div class="flex items-center gap-2">
@@ -101,7 +104,7 @@ new #[Layout('layouts.public')] class extends Component
                         </div>
                     </div>
                 @endif
-            </div> --}}
+            </div>
         </header>
 
         <!-- Post Content -->

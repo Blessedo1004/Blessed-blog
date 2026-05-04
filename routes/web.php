@@ -27,6 +27,15 @@ Route::middleware('auth')->group(function(){
     Route::livewire('/users', 'pages::users.index')
     ->name('users.index');
 
+   Route::livewire('/categories', 'pages::categories.index')
+    ->name('categories.index');
+
+    Route::livewire('/categories/create', 'pages::categories.create')
+    ->name('categories.create');
+
+    Route::livewire('/categories/{category}/edit', 'pages::categories.edit')
+    ->name('categories.edit');
+
     Route::livewire('users/create','pages::users.create')
     ->middleware('can:manage users')
     ->name('users.create');

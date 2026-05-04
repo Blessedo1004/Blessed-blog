@@ -2,13 +2,15 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
-        <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
-        <script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+        <!-- <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css"> -->
+        <script src="https://cdn.tiny.cloud/1/z9lqtbee8lpz4jxb0u6jzbjzad5mzq0myg3fuchczb05xgjp/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <a href="{{ route('home') }}" wire:navigate class="text-lg font-bold text-gray-900 dark:text-white">
+                    Blessed Blog
+                </a>
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
@@ -30,7 +32,11 @@
                         </flux:sidebar.item>
                     @endcan
 
-
+                    @can('manage roles')
+                        <flux:sidebar.item icon="user-group" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>
+                            {{ __('Categories') }}
+                        </flux:sidebar.item>
+                    @endcan
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

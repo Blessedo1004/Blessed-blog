@@ -145,12 +145,13 @@ new class extends Component
                 @enderror
             </div>
 
-            <!-- Content -->
-            <div>
-                <label for="content" class="block text-sm font-medium text-gray-700">
-                    Content
-                </label>
-                <div wire:ignore
+    <!-- Content -->
+    <div>
+        <label for="content" class="block text-sm font-medium text-gray-700">
+            Content
+        </label>
+
+                     {{-- <div wire:ignore
                     x-data="{
                         content: $wire.entangle('content'),
                     }"
@@ -168,13 +169,42 @@ new class extends Component
                     class="trix-content"
                     x-ref="trixEditor"
                 ></trix-editor>
-                </div>
+                </div> --}}
+        
+    <div wire:ignore
+        x-data="{
+            content: @entangle('content')
+        }"
+        x-init="
+            if (!tinymce.get('editor')) {
+                tinymce.init({
+                    selector: '#editor',
+                    height: 400,
+                    menubar: false,
+                    plugins: 'lists link image table code',
+                    toolbar: 'undo redo | formatselect | bold italic underline | bullist numlist | alignleft aligncenter alignright | link image table | code',
 
-                </div>
-                @error('content')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
+                    setup: function (editor) {
+
+                        editor.on('init', function () {
+                            editor.setContent(content || '');
+                        });
+
+                        editor.on('change keyup', function () {
+                            content = editor.getContent();
+                        });
+                    }
+                });
+            }
+        "
+    >
+        <textarea id="editor"></textarea>
+    </div>
+
+    @error('content')
+        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+    @enderror
+</div>
 
             <!-- Featured Image -->
             <div>
@@ -315,13 +345,13 @@ new class extends Component
         <div class="flex gap-3">
             <button 
                 type="submit" 
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
             >
                 Update Post
             </button>
             <a 
                 href="{{ route('posts.index') }}" 
-                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
             >
                 Cancel
             </a>
