@@ -35,7 +35,7 @@ new class extends Component {
     }
 
 
-    public function deleteCategory(Category $category)
+    public function delete(Category $category)
     {
         // authorize
         if (
@@ -117,10 +117,10 @@ new class extends Component {
                                 <div class="text-sm font-medium text-gray-900">{{ $category->name }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-500">{{ Str::limit($category->description, 50) }}</div>
+                                <div class="text-sm text-gray-900">{{ $category->slug }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900">{{ $category->slug }}</div>
+                                <div class="text-sm text-gray-500">{{ Str::limit($category->description, 50) }}</div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
