@@ -8,7 +8,7 @@ new class extends Component
 {
     public Category $category;
 
-    #[Validate('required|string|min:3|max:10|unique:categories,name')]
+    #[Validate('required|string|min:3|max:10|')]
     public string $name;
 
     #[Validate('required|string|min:3|max:255')]
@@ -47,8 +47,8 @@ new class extends Component
 
 <div>
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Edit Post</h1>
-        <p class="mt-1 text-sm text-gray-600">Update your blog post</p>
+        <h1 class="text-2xl font-bold text-gray-900">Edit Category</h1>
+        <p class="mt-1 text-sm text-gray-600">Update category</p>
     </div>
 
     <div class="bg-white rounded-lg border border-gray-200 p-6">

@@ -25,16 +25,24 @@ Route::middleware('auth')->group(function(){
     ->name('posts.edit');
 
     Route::livewire('/users', 'pages::users.index')
+    ->middleware('can:manage users')
     ->name('users.index');
 
    Route::livewire('/categories', 'pages::categories.index')
+    ->middleware('can:manage roles') 
     ->name('categories.index');
 
     Route::livewire('/categories/create', 'pages::categories.create')
+      ->middleware('can:manage roles')
     ->name('categories.create');
 
     Route::livewire('/categories/{category}/edit', 'pages::categories.edit')
+    ->middleware('can:manage roles')
     ->name('categories.edit');
+
+    Route::livewire('/comments', 'pages::comments.index')
+    ->middleware('can:manage roles')
+    ->name('comments.index');
 
     Route::livewire('users/create','pages::users.create')
     ->middleware('can:manage users')

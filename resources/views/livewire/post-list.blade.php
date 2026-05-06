@@ -76,7 +76,7 @@
                             @else
                                 <a href="{{ route('blog.show', $post->slug) }}" wire:navigate>
                                     <div
-                                        class="w-full h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                        class="w-full h-48 bg-gradient-to-br from-green-300 to-green-600 flex items-center justify-center">
                                         <span class="text-4xl text-white font-bold">{{ substr($post->title, 0, 1) }}</span>
                                     </div>
                                 </a>

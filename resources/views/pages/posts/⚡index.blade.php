@@ -12,7 +12,7 @@ new class extends Component {
     public function with(): array
     {
         $query = Post::with(['user','categories','tags'])
-        // ->withCount('comments')
+        ->withCount('comments')
         ->latest();
         // filter by search
         if ($this->search) {
