@@ -87,12 +87,15 @@
                                     <span>{{ $post->published_at->format('M d, Y') }}</span>
                                     <span class="mx-2">•</span>
                                     <span>{{ $post->user->name }}</span>
+                                </div>
+
+                                <div class="flex items-center text-sm text-gray-500 mb-3">
+                                    <span>{{ $post->comments_count  }}  {{Str::plural('comment', $post->comments_count) }}</span>
                                     @if ($post->views_count > 0)
-                                        <span>•</span>
+                                        <spa class="mx-2">•</span>
                                         <span>{{ number_format($post->views_count) }} {{ Str::plural('view',$post->views_count) }}</span>
                                     @endif
                                 </div>
-
                                 <h2 class="text-xl font-bold text-gray-900 mb-2">
                                     <a href="{{ route('blog.show', $post->slug) }}" wire:navigate class="hover:text-indigo-600">
                                         {{ $post->title }}

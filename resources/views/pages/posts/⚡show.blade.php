@@ -15,22 +15,22 @@ new #[Layout('layouts.public')] class extends Component
             ->with(['user','categories','tags'])
             ->firstOrFail();
         // track views
-        // $this->trackView();
+        $this->trackView();
     }
 
-    // protected function trackView(){
-    //     // increment the counter
-    //     $this->post->increment('views_count');
+    protected function trackView(){
+        // increment the counter
+        $this->post->increment('views_count');
 
-    //     // record the detailed view
-    //     PostView::create([
-    //         'post_id' => $this->post->id,
-    //         'ip_address' => request()->ip(),
-    //         'user_agent' => request()->userAgent(),
-    //         'user_id' => auth()->id(),
-    //         'viewed_at' => now(),
-    //     ]);
-    // }
+        // record the detailed view
+        PostView::create([
+            'post_id' => $this->post->id,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'user_id' => auth()->id(),
+            'viewed_at' => now(),
+        ]);
+    }
 
     
 };

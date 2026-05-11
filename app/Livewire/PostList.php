@@ -28,7 +28,7 @@ class PostList extends Component
     #[Title('Blessed Blog')]
     public function render()
     {
-        $posts = Post::with(['user','categories','tags'])
+        $posts = Post::with(['user','categories','tags'])->withCount('comments')
         ->where('status','published')
         ->when($this->search, function ($query) {
             $query->where(function ($q) {

@@ -15,6 +15,7 @@ class Post extends Model
         'content',
         'featured_image',
         'status',
+        'views_count',
         'published_at'
     ];
 
@@ -36,6 +37,10 @@ class Post extends Model
 
     public function comments(){
         return $this->hasMany(Comment::class);
+    }
+
+    public function views(){
+        return $this->hasMany(PostView::class);
     }
 
     //create slug

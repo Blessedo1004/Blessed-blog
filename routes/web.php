@@ -5,9 +5,7 @@ use App\Livewire\PostList;
 
 Route::get('/', PostList::class)->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
-});
+Route::livewire('/dashboard', 'pages::dashboard')->middleware('auth', 'verified')->name('dashboard');
 
 Route::get('/blog',PostList::class)->name('blog.index');
 Route::livewire('/blog/{slug}', 'pages::posts.show')->name('blog.show');
