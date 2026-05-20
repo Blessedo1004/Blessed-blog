@@ -108,7 +108,7 @@ new #[Layout('layouts.public')] class extends Component
         </header>
 
         <!-- Post Content -->
-        <div class="prose prose-lg prose-indigo max-w-none mb-12">
+        <div class="prose prose-lg prose-indigo max-w-none mb-12 ProseMirror">
             {!! $post->content !!}
         </div>
 

@@ -14,6 +14,19 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
                     <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search posts..."
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+
+                    @if($showSearchResults)
+                        <div class="mt-3 relative z-20 min-h-[5rem] max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
+                            @forelse ($searchedPosts as $searchedPost)
+                               <a href="{{ route('blog.show', $searchedPost->slug) }}" class="block rounded-lg px-4 py-3 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                   <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $searchedPost->title }}</h3>
+                               </a>
+                            @empty
+                                <div class="px-4 py-4 text-sm text-gray-500">No posts found</div>
+                            @endforelse
+                        </div>  
+                    @endif    
+
                 </div>
 
                 <!-- Categories -->

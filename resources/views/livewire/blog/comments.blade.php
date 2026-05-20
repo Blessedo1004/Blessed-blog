@@ -3,10 +3,22 @@
         Comments ({{ $comments->count() + $comments->sum(fn($c) => $c->replies->count()) }})
     </h2>
 
-    <!-- Success Message -->
+    <!-- Success Messages -->
     @if (session('comment-success'))
         <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
             <p class="text-sm text-green-800">{{ session('comment-success') }}</p>
+        </div>
+    @endif
+
+    @if (session('delete-success'))
+        <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
+            <p class="text-sm text-green-800">{{ session('delete-success') }}</p>
+        </div>
+    @endif
+
+        @if (session('delete-error'))
+        <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4" wire:transition>
+            <p class="text-sm text-red-800">{{ session('delete-error') }}</p>
         </div>
     @endif
 
@@ -89,6 +101,16 @@
                                 Reply
                             </button>
                         @endif
+
+                        @if($comment->user_id === Auth::id())
+                            <button 
+                                wire:click="deleteComment({{ $comment->id }})"
+                                wire:confirm="Are you sure you want to delete this comment?"
+                                class="text-red-600 hover:text-red-900"
+                            >
+                                Delete
+                            </button>  
+                        @endif
                     @endauth
                 </div>
 
@@ -127,6 +149,31 @@
 
                 <!-- Replies -->
                 @if($comment->replies->count() > 0)
+                <div class="flex items-center gap-2 mt-4">
+                    <div class="text-sm text-gray-500">
+                        {{ $comment->replies->count() }} {{ Str::plural('Reply', $comment->replies->count()) }}
+                    </div>
+
+                    <!-- Dropdown -->
+                    <div class="relative">
+                        <button type="button" class="flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div class="absolute left-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 focus:outline-none hidden">
+                            <div class="py-1">
+                                <button type="button" class="block w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                    Show Replies
+                                </button>
+                                <button type="button" class="block w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                    Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                     <div class="mt-6 ml-8 space-y-4 border-l-2 border-gray-200 pl-6">
                         @foreach($comment->replies as $reply)
                             <div class="bg-gray-50 rounded-lg p-4">
@@ -145,6 +192,15 @@
                                     {{ $reply->content }}
                                 </div>
                             </div>
+                            @if($reply->user_id === Auth::id())
+                            <button 
+                                wire:click="deleteComment({{ $reply->id }})"
+                                wire:confirm="Are you sure you want to delete this comment?"
+                                class="text-red-600 hover:text-red-900"
+                            >
+                                Delete
+                            </button>  
+                        @endif
                         @endforeach
                     </div>
                 @endif

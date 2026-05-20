@@ -24,19 +24,14 @@ class PostList extends Component
     #[Url(as: 'tag')]
     public string $selectedTag = '';
 
+    public $showSearchResults = false;
+
     #[Layout('layouts.public')]
     #[Title('Blessed Blog')]
     public function render()
     {
         $posts = Post::with(['user','categories','tags'])->withCount('comments')
         ->where('status','published')
-        ->when($this->search, function ($query) {
-            $query->where(function ($q) {
-                $q->where('title', 'like', '%'.$this->search.'%')
-                ->orWhere('content', 'like', '%'.$this->search.'%')
-                ->orWhere('excerpt', 'like', '%'.$this->search.'%');
-            });
-        })
         ->when($this->selectedCategory, function($query){
             $query->whereHas('categories',function($q){
                 $q->where('slug',$this->selectedCategory);
@@ -50,8 +45,24 @@ class PostList extends Component
         ->latest('published_at')
         ->paginate(9);
 
+        if($this->search){
+        $searchedPosts = Post::where('status','published')->select(['id','title','slug'])
+        ->where(function ($q) {
+                $q->where('title', 'like', '%'.$this->search.'%')
+                ->orWhere('content', 'like', '%'.$this->search.'%')
+                ->orWhere('excerpt', 'like', '%'.$this->search.'%');
+            })->get();
+
+            $this->showSearchResults = true;
+        }
+
+        else if($this->search === ''){
+            $this->showSearchResults = false;
+        }
+
         return view('livewire.post-list',[
             'posts' => $posts,
+            'searchedPosts' => $searchedPosts ?? [],
             'categories' => Category::withCount('posts')->get(),
             'tags' => Tag::withCount('posts')->get(),
         ]);

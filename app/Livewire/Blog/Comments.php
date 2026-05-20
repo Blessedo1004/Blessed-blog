@@ -8,6 +8,8 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\CommentNotification;
+use Illuminate\Support\Facades\Mail;
 
 class Comments extends Component
 {
@@ -32,7 +34,7 @@ class Comments extends Component
 
         $this->validate(['newComment' => 'required|string|min:3|max:1000']);
 
-        Comment::create([
+        $comment = Comment::create([
             'post_id' => $this->post->id,
             'user_id' => Auth::id(),
             'content' => $this->newComment,
@@ -41,6 +43,12 @@ class Comments extends Component
 
         $this->newComment = '';
 
+        $comment->load(['post', 'user']);
+
+        if($this->post->user_id !== Auth::id()){
+            Mail::to($this->post->user->email)->send(new CommentNotification($comment));
+        }
+        
         // $this->dispatch('comment-posted');
 
         session()->flash('comment-success','comment posted successfully!');
@@ -67,7 +75,7 @@ class Comments extends Component
 
         $this->validate(['replyContent' => 'required|string|min:3|max:1000']);
 
-        Comment::create([
+        $comment = Comment::create([
             'post_id' => $this->post->id,
             'user_id' => Auth::id(),
             'parent_id' => $parentId,
@@ -78,9 +86,21 @@ class Comments extends Component
         $this->replyingTo = null;
         $this->replyContent = '';
 
+        $comment->load(['post', 'user']);
         // $this->dispatch('comment-posted');
-
+            if($this->post->user_id !== Auth::id()){
+            Mail::to($this->post->user->email)->send(new CommentNotification($comment));
+        }
         session()->flash('comment-success','Reply posted successfully!');
+    }
+
+    public function deleteComment(Comment $comment){
+        if($comment->user_id != Auth::id()){
+            session()->flash('delete-error', 'You cannot delete this comment');
+            return;
+        }
+        $comment->delete();
+        session()->flash('delete-success', 'Comment deleted Successfully');
     }
 
     // #[On('comment-posted')]

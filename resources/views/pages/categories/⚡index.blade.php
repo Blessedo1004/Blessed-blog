@@ -132,7 +132,7 @@ new class extends Component {
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $category->created_at->format('M j, Y') }}</div>
+                                <div class="text-sm text-gray-900">{{ $category->created_at->format('M d, Y') }}</div>
                             </td>
 
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
