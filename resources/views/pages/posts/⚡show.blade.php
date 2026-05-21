@@ -76,7 +76,7 @@ new #[Layout('layouts.public')] class extends Component
                 <img src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=4f46e5&color=fff" alt="{{ $post->user->name }}" class="w-10 h-10 rounded-full mr-3">
                 <div>
                     <p class="font-medium text-gray-900">{{ $post->user->name }}</p>
-                    <p class="text-sm">{{ $post->published_at->format('M d, Y') }} • {{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read • {{ number_format($post->views_count) }} views</p>
+                    <p class="text-sm">{{ $post->published_at->format('M d, Y') }} • {{ ceil(str_word_count(strip_tags($post->content)) / 200) }}read min  • {{ number_format($post->views_count) }} views</p>
                 </div>
             </div>
             <!-- Categories and Tags -->

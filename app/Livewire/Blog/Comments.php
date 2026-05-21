@@ -22,6 +22,8 @@ class Comments extends Component
 
     public ?int $repliesFor = null;
 
+    public ?int $showMoreFor = null;
+
     #[Validate('required|string|min:3|max:1000')]
     public string $replyContent = '';
 
@@ -55,13 +57,20 @@ class Comments extends Component
 
         session()->flash('comment-success','comment posted successfully!');
     }
-    
-    public function showReplies($commentId){
+
+    public function showReplies($commentId)
+    {
         $this->repliesFor = $commentId;
     }
 
-    public function hideReplies($commentId){
+    public function hideReplies()
+    {
         $this->repliesFor = null;
+    }
+
+        public function showMore($id)
+    {
+        $this->showMoreFor = $id;
     }
 
     public function startReply($commentId){
