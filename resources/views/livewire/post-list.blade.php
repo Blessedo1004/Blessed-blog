@@ -105,8 +105,10 @@
                                 <div class="flex items-center text-sm text-gray-500 mb-3">
                                     <span>{{ $post->comments_count  }}  {{Str::plural('comment', $post->comments_count) }}</span>
                                     @if ($post->views_count > 0)
-                                        <spa class="mx-2">•</span>
+                                        <span class="mx-2">•</span>
                                         <span>{{ number_format($post->views_count) }} {{ Str::plural('view',$post->views_count) }}</span>
+                                        <span class="mx-1">•</span>
+                                        <span>{{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read</span>
                                     @endif
                                 </div>
                                 <h2 class="text-xl font-bold text-gray-900 mb-2">

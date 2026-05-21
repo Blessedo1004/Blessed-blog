@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function(){
     Route::livewire('users/{user}/edit','pages::users.edit')
     ->middleware('can:manage users')
     ->name('users.edit');
+
+    Route::post('/tiptap/upload', [App\Http\Controllers\TiptapImageController::class, 'upload'])->name('tiptap.upload');
 });  
 
 require __DIR__.'/settings.php';

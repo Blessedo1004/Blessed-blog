@@ -20,6 +20,8 @@ class Comments extends Component
 
     public ?int $replyingTo = null;
 
+    public ?int $repliesFor = null;
+
     #[Validate('required|string|min:3|max:1000')]
     public string $replyContent = '';
 
@@ -54,6 +56,14 @@ class Comments extends Component
         session()->flash('comment-success','comment posted successfully!');
     }
     
+    public function showReplies($commentId){
+        $this->repliesFor = $commentId;
+    }
+
+    public function hideReplies($commentId){
+        $this->repliesFor = null;
+    }
+
     public function startReply($commentId){
         if (!Auth::check()) {
             return redirect()->route('login');
@@ -84,6 +94,7 @@ class Comments extends Component
         ]);
 
         $this->replyingTo = null;
+        $this->repliesFor = $parentId;
         $this->replyContent = '';
 
         $comment->load(['post', 'user']);

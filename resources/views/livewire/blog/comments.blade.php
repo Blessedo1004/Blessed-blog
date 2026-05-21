@@ -149,60 +149,74 @@
 
                 <!-- Replies -->
                 @if($comment->replies->count() > 0)
-                <div class="flex items-center gap-2 mt-4">
-                    <div class="text-sm text-gray-500">
-                        {{ $comment->replies->count() }} {{ Str::plural('Reply', $comment->replies->count()) }}
-                    </div>
 
-                    <!-- Dropdown -->
-                    <div class="relative">
-                        <button type="button" class="flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
+                    <!-- Show Replies -->
+                    @if($repliesFor !== $comment->id)
+                        <div class="flex items-center gap-2 mt-4 cursor-pointer" wire:click="showReplies({{ $comment->id }})">
+                            <div class="text-sm text-gray-500">
+                                {{ $comment->replies->count() }} {{ Str::plural('Reply', $comment->replies->count()) }}
+                            </div>
 
-                        <div class="absolute left-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 focus:outline-none hidden">
-                            <div class="py-1">
-                                <button type="button" class="block w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
-                                    Show Replies
-                                </button>
-                                <button type="button" class="block w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
-                                    Report
+                            <!-- Dropdown -->
+                            <div class="relative">
+                                <button type="button" class="flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </button>
                             </div>
                         </div>
+                    @endif
+
+                <!-- Hide Replies -->
+                @if($repliesFor === $comment->id)
+                    <div class="flex items-center gap-2 mt-4 cursor-pointer" wire:click="$set('repliesFor', null)">
+                        <div class="text-sm text-gray-500">
+                            Hide Replies
+                        </div>
+
+                        <!-- Dropdown -->
+                        <div class="relative">
+                            <button type="button" class="flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                    <div class="mt-6 ml-8 space-y-4 border-l-2 border-gray-200 pl-6">
-                        @foreach($comment->replies as $reply)
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="flex items-start mb-3">
-                                    <img 
-                                        src="https://ui-avatars.com/api/?name={{ urlencode($reply->user->name) }}&background=6366f1&color=fff" 
-                                        alt="{{ $reply->user->name }}" 
-                                        class="w-8 h-8 rounded-full mr-3"
-                                    >
-                                    <div>
-                                        <p class="font-medium text-gray-900 text-sm">{{ $reply->user->name }}</p>
-                                        <p class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</p>
+                @endif
+                    @if($repliesFor === $comment->id)
+                        <div class="mt-6 ml-8 space-y-4 border-l-2 border-gray-200 pl-6">
+                            @foreach($comment->replies as $reply)
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <div class="flex items-start mb-3">
+                                        <img 
+                                            src="https://ui-avatars.com/api/?name={{ urlencode($reply->user->name) }}&background=6366f1&color=fff" 
+                                            alt="{{ $reply->user->name }}" 
+                                            class="w-8 h-8 rounded-full mr-3"
+                                        >
+                                        <div>
+                                            <p class="font-medium text-gray-900 text-sm">{{ $reply->user->name }}</p>
+                                            <p class="text-xs text-gray-500">{{ $reply->created_at->diffForHumans() }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-gray-700 text-sm">
+                                        {{ $reply->content }}
                                     </div>
                                 </div>
-                                <div class="text-gray-700 text-sm">
-                                    {{ $reply->content }}
-                                </div>
-                            </div>
-                            @if($reply->user_id === Auth::id())
-                            <button 
-                                wire:click="deleteComment({{ $reply->id }})"
-                                wire:confirm="Are you sure you want to delete this comment?"
-                                class="text-red-600 hover:text-red-900"
-                            >
-                                Delete
-                            </button>  
-                        @endif
-                        @endforeach
-                    </div>
+                                @if($reply->user_id === Auth::id())
+                                <button 
+                                    wire:click="deleteComment({{ $reply->id }})"
+                                    wire:confirm="Are you sure you want to delete this comment?"
+                                    class="text-red-600 hover:text-red-900"
+                                >
+                                    Delete
+                                </button>  
+                            @endif
+                            @endforeach
+                        </div> 
+                    @endif
+
                 @endif
             </div>
         @empty

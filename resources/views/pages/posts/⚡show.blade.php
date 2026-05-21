@@ -18,18 +18,31 @@ new #[Layout('layouts.public')] class extends Component
         $this->trackView();
     }
 
-    protected function trackView(){
-        // increment the counter
-        $this->post->increment('views_count');
+    protected function trackView()
+    {
+        $query = PostView::where('post_id', $this->post->id);
 
-        // record the detailed view
-        PostView::create([
-            'post_id' => $this->post->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'user_id' => auth()->id(),
-            'viewed_at' => now(),
-        ]);
+        if (auth()->check()) {
+            $query->where('user_id', auth()->id());
+        } else {
+            $query->where('ip_address', request()->ip())
+                  ->whereNull('user_id');
+        }
+
+        // Only count as a new view if it hasn't been seen in the last 24 hours
+        $viewedRecently = $query->where('viewed_at', '>', now()->subDay())->exists();
+
+        if (!$viewedRecently) {
+            $this->post->increment('views_count');
+
+            PostView::create([
+                'post_id'    => $this->post->id,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'user_id'    => auth()->id(),
+                'viewed_at'  => now(),
+            ]);
+        }
     }
 
     
@@ -63,7 +76,7 @@ new #[Layout('layouts.public')] class extends Component
                 <img src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=4f46e5&color=fff" alt="{{ $post->user->name }}" class="w-10 h-10 rounded-full mr-3">
                 <div>
                     <p class="font-medium text-gray-900">{{ $post->user->name }}</p>
-                    <p class="text-sm">{{ $post->published_at->format('F d, Y') }} • {{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read • {{ number_format($post->views_count) }} views</p>
+                    <p class="text-sm">{{ $post->published_at->format('M d, Y') }} • {{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read • {{ number_format($post->views_count) }} views</p>
                 </div>
             </div>
             <!-- Categories and Tags -->
@@ -119,7 +132,7 @@ new #[Layout('layouts.public')] class extends Component
                     <img src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&background=4f46e5&color=fff" alt="{{ $post->user->name }}" class="w-10 h-10 rounded-full mr-4">
                     <div>
                         <p class="font-medium text-gray-900">Written by {{ $post->user->name }}</p>
-                        <p class="text-sm text-gray-600">Published on {{ $post->published_at->format('F d, Y') }}</p>
+                        <p class="text-sm text-gray-600">Published on {{ $post->published_at->format('M d, Y') }}</p>
                     </div>
                 </div>
             </div>
