@@ -43,17 +43,17 @@ class PostList extends Component
             });
         })
         ->latest('published_at')
-        ->paginate(9);
+        ->paginate(10);
 
         if($this->search){
-        $searchedPosts = Post::where('status','published')->select(['id','title','slug'])
-        ->where(function ($q) {
-                $q->where('title', 'like', '%'.$this->search.'%')
-                ->orWhere('content', 'like', '%'.$this->search.'%')
-                ->orWhere('excerpt', 'like', '%'.$this->search.'%');
-            })->get();
+            $searchedPosts = Post::where('status','published')->select(['id','title','slug'])
+            ->where(function ($q) {
+                    $q->where('title', 'like', '%'.$this->search.'%')
+                    ->orWhere('content', 'like', '%'.$this->search.'%')
+                    ->orWhere('excerpt', 'like', '%'.$this->search.'%');
+                })->paginate(10)->onEachSide(0);
 
-            $this->showSearchResults = true;
+                $this->showSearchResults = true;
         }
 
         else if($this->search === ''){

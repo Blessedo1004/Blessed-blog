@@ -80,17 +80,20 @@
 
                 <!-- Comment Content -->
                 <div class="text-gray-700 mb-4">
-                    @php $commentLen = mb_strlen($comment->content); @endphp
+                    @php 
+                        $commentLen = mb_strlen($comment->content); 
+                        $isExpanded = in_array($comment->id, $expandedComments);
+                    @endphp
 
-                    @if($commentLen > 20 && $showMoreFor !== $comment->id)
+                    @if($commentLen > 20 && !$isExpanded)
                         {{ Str::limit($comment->content, 20) }}
-                        <button wire:click="showMore({{ $comment->id }})" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                        <button wire:click="toggleExpand({{ $comment->id }})" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                             ...show more
                         </button>
                     @else
                         {{ $comment->content }}
-                        @if($commentLen > 20 && $showMoreFor === $comment->id)
-                            <button wire:click="$set('showMoreFor', null)" class="text-xs text-gray-500 hover:text-gray-700 ml-2 italic">
+                        @if($commentLen > 20 && $isExpanded)
+                            <button wire:click="toggleExpand({{ $comment->id }})" class="text-xs text-gray-500 hover:text-gray-700 ml-2 italic">
                                 (show less)
                             </button>
                         @endif
@@ -225,17 +228,20 @@
                                             @endif
                                         </div>
                                         <div class="text-gray-700 text-sm">
-                                            @php $replyLen = mb_strlen($reply->content); @endphp
+                                            @php 
+                                                $replyLen = mb_strlen($reply->content); 
+                                                $isReplyExpanded = in_array($reply->id, $expandedComments);
+                                            @endphp
 
-                                            @if($replyLen > 20 && $showMoreFor !== $reply->id)
+                                            @if($replyLen > 20 && !$isReplyExpanded)
                                                 {{ Str::limit($reply->content, 20) }}
-                                                <button wire:click="showMore({{ $reply->id }})" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                                <button wire:click="toggleExpand({{ $reply->id }})" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                                                     ...show more
                                                 </button>
                                             @else
                                                 {{ $reply->content }}
-                                                @if($replyLen > 20 && $showMoreFor === $reply->id)
-                                                    <button wire:click="$set('showMoreFor', null)" class="text-xs text-gray-500 hover:text-gray-700 ml-2 italic">
+                                                @if($replyLen > 20 && $isReplyExpanded)
+                                                    <button wire:click="toggleExpand({{ $reply->id }})" class="text-xs text-gray-500 hover:text-gray-700 ml-2 italic">
                                                         (show less)
                                                     </button>
                                                 @endif

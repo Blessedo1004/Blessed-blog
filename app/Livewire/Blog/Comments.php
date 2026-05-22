@@ -22,7 +22,7 @@ class Comments extends Component
 
     public ?int $repliesFor = null;
 
-    public ?int $showMoreFor = null;
+    public array $expandedComments = [];
 
     #[Validate('required|string|min:3|max:1000')]
     public string $replyContent = '';
@@ -68,9 +68,13 @@ class Comments extends Component
         $this->repliesFor = null;
     }
 
-        public function showMore($id)
+    public function toggleExpand($id)
     {
-        $this->showMoreFor = $id;
+        if (in_array($id, $this->expandedComments)) {
+            $this->expandedComments = array_diff($this->expandedComments, [$id]);
+        } else {
+            $this->expandedComments[] = $id;
+        }
     }
 
     public function startReply($commentId){
