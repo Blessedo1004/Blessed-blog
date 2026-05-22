@@ -69,10 +69,10 @@ new #[Layout('layouts.public')] class extends Component
 
         $totalRelated = (clone $relatedQuery)->count();
         $relatedPosts = $relatedQuery
-            ->with('user')
+            ->with('user:id,name') // Eager load author name
             ->latest()
             ->take($this->perPage)
-            ->get();
+            ->get(['id', 'title', 'slug', 'featured_image', 'published_at','user_id']);
 
         return [
             'relatedPosts' => $relatedPosts,
