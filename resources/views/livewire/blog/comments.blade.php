@@ -41,8 +41,15 @@
                     <button 
                         type="submit"
                         class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                        wire:loading.attr="disabled"
                     >
-                        Post Comment
+                        <span wire:loading.remove wire:target="postComment">Post Comment</span>
+                        <span wire:loading wire:target="postComment">                                       
+                             <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                             </svg>
+                        </span>
                     </button>
                 </div>
             </form>
@@ -85,14 +92,14 @@
                         $isExpanded = in_array($comment->id, $expandedComments);
                     @endphp
 
-                    @if($commentLen > 20 && !$isExpanded)
-                        {{ Str::limit($comment->content, 20) }}
+                    @if($commentLen > 40 && !$isExpanded)
+                        {{ Str::limit($comment->content, 40) }}
                         <button wire:click="toggleExpand({{ $comment->id }})" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                             ...show more
                         </button>
                     @else
                         {{ $comment->content }}
-                        @if($commentLen > 20 && $isExpanded)
+                        @if($commentLen > 40 && $isExpanded)
                             <button wire:click="toggleExpand({{ $comment->id }})" class="text-xs text-gray-500 hover:text-gray-700 ml-2 italic">
                                 (show less)
                             </button>
@@ -156,8 +163,15 @@
                                 <button 
                                     type="submit"
                                     class="inline-flex items-center px-3 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700"
+                                     wire:loading.attr="disabled"
                                 >
-                                    Post Reply
+                                <span wire:loading.remove wire:target="postReply({{ $comment->id }})">Reply</span>
+                                <span wire:loading wire:target="postReply({{ $comment->id }})">                                       
+                                    <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </span>
                                 </button>
                             </div>
                         </form>
@@ -233,14 +247,14 @@
                                                 $isReplyExpanded = in_array($reply->id, $expandedComments);
                                             @endphp
 
-                                            @if($replyLen > 20 && !$isReplyExpanded)
-                                                {{ Str::limit($reply->content, 20) }}
+                                            @if($replyLen > 40 && !$isReplyExpanded)
+                                                {{ Str::limit($reply->content, 40) }}
                                                 <button wire:click="toggleExpand({{ $reply->id }})" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
                                                     ...show more
                                                 </button>
                                             @else
                                                 {{ $reply->content }}
-                                                @if($replyLen > 20 && $isReplyExpanded)
+                                                @if($replyLen > 40 && $isReplyExpanded)
                                                     <button wire:click="toggleExpand({{ $reply->id }})" class="text-xs text-gray-500 hover:text-gray-700 ml-2 italic">
                                                         (show less)
                                                     </button>

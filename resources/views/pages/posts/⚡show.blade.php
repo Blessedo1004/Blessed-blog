@@ -186,6 +186,7 @@ new #[Layout('layouts.public')] class extends Component
                                     @endif
                                     <div>
                                         <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2">{{ $related->title }}</h4>
+                                        <p class="text-sm text-gray-500 mt-1">{{ $related->user->name}}</p>
                                         <p class="text-sm text-gray-500 mt-1">{{ $related->published_at->format('M d, Y') }}</p>
                                     </div>
                                 </div>
@@ -225,6 +226,7 @@ new #[Layout('layouts.public')] class extends Component
                                     </div>
                                 @endif
                                 <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight">{{ $related->title }}</h4>
+                                <p class="text-sm text-gray-500 mt-1">{{ $related->user->name}}</p>
                                 <p class="text-sm text-gray-500 mt-2">{{ $related->published_at->format('M d, Y') }}</p>
                             </a>
                         @empty
