@@ -10,6 +10,18 @@
         </div>
     @endif
 
+    @if (session('comment-edit-success'))
+        <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
+            <p class="text-sm text-green-800">{{ session('comment-edit-success') }}</p>
+        </div>
+    @endif
+
+    @if (session('reply-edit-success'))
+        <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
+            <p class="text-sm text-green-800">{{ session('reply-edit-success') }}</p>
+        </div>
+    @endif
+
     @if (session('delete-success'))
         <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
             <p class="text-sm text-green-800">{{ session('delete-success') }}</p>
@@ -24,8 +36,10 @@
 
     <!-- New Comment Form -->
     @auth
-        <div class="mb-8 bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Leave a comment</h3>
+        <div class="mb-8 bg-gray-50 rounded-lg p-6" id="comment-form">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                {{ $isCommentEdit ? 'Edit your comment' : 'Leave a comment' }}
+            </h3>
             <form wire:submit="postComment">
                 <textarea 
                     wire:model="newComment"
@@ -37,13 +51,24 @@
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
                 
-                <div class="mt-4 flex justify-end">
+                <div class="mt-4 flex justify-end gap-2">
+                    @if($isCommentEdit)
+                        <button 
+                            type="button"
+                            wire:click="cancelEdit"
+                            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                    @endif
                     <button 
                         type="submit"
                         class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
                         wire:loading.attr="disabled"
                     >
-                        <span wire:loading.remove wire:target="postComment">Post Comment</span>
+                        <span wire:loading.remove wire:target="postComment">
+                            {{ $isCommentEdit ? 'Update Comment' : 'Post Comment' }}
+                        </span>
                         <span wire:loading wire:target="postComment">                                       
                              <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -110,23 +135,19 @@
                 <!-- Comment Actions -->
                 <div class="flex items-center gap-4">
                     @auth
-                        @if($replyingTo === $comment->id)
-                            <button 
-                                wire:click="cancelReply"
-                                class="text-sm text-gray-600 hover:text-gray-900"
-                            >
-                                Cancel
-                            </button>
-                        @else
+                
                             <button 
                                 wire:click="startReply({{ $comment->id }})"
                                 class="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
                             >
                                 Reply
                             </button>
-                        @endif
+                        
 
                         @if($comment->user_id === Auth::id())
+                            <div class="text-sm text-gray-500 cursor-pointer" wire:click="showCommentEdit({{ $comment->id }})">
+                                    Edit
+                            </div>
                             <button 
                                 wire:click="deleteComment({{ $comment->id }})"
                                 wire:confirm="Are you sure you want to delete this comment?"
@@ -141,6 +162,9 @@
                 <!-- Reply Form -->
                 @if($replyingTo === $comment->id)
                     <div class="mt-4 bg-gray-50 rounded-lg p-4" wire:transition>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                            {{ $isReplyEdit ? 'Edit your reply' : 'Reply to ' . $comment->user->name }}
+                        </h4>
                         <form wire:submit="postReply({{ $comment->id }})">
                             <textarea 
                                 wire:model="replyContent"
@@ -165,7 +189,9 @@
                                     class="inline-flex items-center px-3 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700"
                                      wire:loading.attr="disabled"
                                 >
-                                <span wire:loading.remove wire:target="postReply({{ $comment->id }})">Reply</span>
+                                <span wire:loading.remove wire:target="postReply({{ $comment->id }})">
+                                    {{ $isReplyEdit ? 'Update Reply' : 'Reply' }}
+                                </span>
                                 <span wire:loading wire:target="postReply({{ $comment->id }})">                                       
                                     <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -238,13 +264,18 @@
                                             </div>
 
                                             @if($reply->user_id === Auth::id())
-                                                <button 
-                                                    wire:click="deleteComment({{ $reply->id }})"
-                                                    wire:confirm="Are you sure you want to delete this reply?"
-                                                    class="text-red-600 hover:text-red-900 text-xs"
-                                                >
-                                                    Delete
-                                                </button>  
+                                                <div class="flex items-center gap-4 justify-end">
+                                                    <div class="text-sm text-gray-500 cursor-pointer hover:text-indigo-600" wire:click="showReplyEdit({{ $reply->id }})">
+                                                         Edit
+                                                    </div>
+                                                    <button 
+                                                        wire:click="deleteComment({{ $reply->id }})"
+                                                        wire:confirm="Are you sure you want to delete this reply?"
+                                                        class="text-red-600 hover:text-red-900 text-xs"
+                                                    >
+                                                        Delete
+                                                    </button>  
+                                                </div>
                                             @endif
                                         </div>
                                         <div class="text-gray-700 text-sm">

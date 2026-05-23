@@ -15,6 +15,10 @@ class Comments extends Component
 {
     public Post $post;
 
+    public Comment $comment;
+
+    public Comment $reply;
+
     #[Validate('required|string|min:3|max:1000')]
     public string $newComment = '';
 
@@ -25,6 +29,10 @@ class Comments extends Component
     public array $expandedComments = [];
     
     public $moreComments = 5;
+
+    public $isCommentEdit = false;
+
+    public $isReplyEdit = false;
 
     public array $repliesPagination = [];
 
@@ -44,12 +52,30 @@ class Comments extends Component
         $this->repliesPagination[$commentId] = ($this->repliesPagination[$commentId] ?? 3) + 3;
     }
 
+    public function cancelEdit()
+    {
+        $this->isCommentEdit = false;
+        $this->isReplyEdit = false;
+        $this->newComment = '';
+        $this->replyContent = '';
+        $this->replyingTo = null;
+    }
+
     public function postComment(){
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
         $this->validate(['newComment' => 'required|string|min:3|max:1000']);
+
+        if ($this->isCommentEdit){
+            $this->comment->content = $this->newComment;
+            $this->comment->save();
+            $this->isCommentEdit = false;
+            $this->newComment = '';
+            session()->flash('comment-edit-success','comment edited successfully!');
+            return;
+        }
 
         $comment = Comment::create([
             'post_id' => $this->post->id,
@@ -70,6 +96,27 @@ class Comments extends Component
 
         session()->flash('comment-success','comment posted successfully!');
     }
+
+
+    public function showCommentEdit (Comment $comment){
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $this->comment = $comment;
+        $this->newComment = $comment->content;
+        $this->isCommentEdit = true;
+    }
+
+    public function showReplyEdit (Comment $comment){
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        $this->reply = $comment;
+        $this->replyContent = $comment->content;
+        $this->isReplyEdit = true;
+        $this->replyingTo = $comment->parent_id;
+    }
+
 
     public function showReplies($commentId)
     {
@@ -102,6 +149,7 @@ class Comments extends Component
     public function cancelReply(){
         $this->replyingTo = null;
         $this->replyContent = '';
+        $this->isReplyEdit = false;
     }
 
     public function postReply($parentId){
@@ -110,6 +158,17 @@ class Comments extends Component
         }
 
         $this->validate(['replyContent' => 'required|string|min:3|max:1000']);
+
+        if ($this->isReplyEdit){
+            $this->reply->content = $this->replyContent;
+            $this->reply->save();
+            $this->isReplyEdit = false;
+            $this->replyingTo = null;
+            $this->replyContent = '';
+            $this->repliesFor = $parentId;
+            session()->flash('reply-edit-success','reply edited successfully!');
+            return;
+        }
 
         $comment = Comment::create([
             'post_id' => $this->post->id,
