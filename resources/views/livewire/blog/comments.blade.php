@@ -216,7 +216,13 @@
 
                             <!-- Actual Replies List -->
                             <div class="mt-6 ml-8 space-y-4 border-l-2 border-gray-200 pl-6" wire:transition>
-                                @foreach($comment->replies->sortByDesc('id') as $reply)
+                                @php
+                                    $visibleCount = $repliesPagination[$comment->id] ?? 2;
+                                    $allReplies = $comment->replies->sortByDesc('id');
+                                    $visibleReplies = $allReplies->take($visibleCount);
+                                @endphp
+
+                                @foreach($visibleReplies as $reply)
                                     <div wire:key="reply-{{ $reply->id }}" class="bg-gray-50 rounded-lg p-4">
                                         <div class="flex items-start justify-between mb-3">
                                             <div class="flex items-center">
@@ -263,6 +269,23 @@
                                         </div>
                                     </div>
                                 @endforeach
+
+                                @if($allReplies->count() > $visibleCount)
+                                    <div class="mt-4">
+                                        <button 
+                                            wire:click="loadMoreReplies({{ $comment->id }})"
+                                            class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-2"
+                                        >
+                                            <span>View {{ $allReplies->count() - $visibleCount}} more {{Str::plural('reply',$allReplies->count() > $visibleCount)}}</span>
+                                            <div wire:loading wire:target="loadMoreReplies({{ $comment->id }})">
+                                                <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            </div>
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -273,5 +296,21 @@
                 <p class="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
             </div>
         @endforelse
-    </div>
+        {{-- load more comments --}}
+        @if($totalCommentsCount > $moreComments)
+            <div class="mt-4">
+                <button 
+                    wire:click="loadMoreComments"
+                    class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-2"
+                >
+                    <span>View {{ $totalCommentsCount - $moreComments }} more {{Str::plural('comment',$totalCommentsCount - $moreComments)}}</span>
+                    <div wire:loading wire:target="loadMoreComments">
+                        <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        @endif    </div>
 </div>

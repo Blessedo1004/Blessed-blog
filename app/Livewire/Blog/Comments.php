@@ -23,12 +23,25 @@ class Comments extends Component
     public ?int $repliesFor = null;
 
     public array $expandedComments = [];
+    
+    public $moreComments = 1;
+
+    public array $repliesPagination = [];
 
     #[Validate('required|string|min:3|max:1000')]
     public string $replyContent = '';
 
     public function mount(Post $post){
         $this->post = $post;
+    }
+
+    public function loadMoreComments(){
+        $this->moreComments += 1;
+    }
+
+    public function loadMoreReplies($commentId)
+    {
+        $this->repliesPagination[$commentId] = ($this->repliesPagination[$commentId] ?? 2) + 2;
     }
 
     public function postComment(){
@@ -130,16 +143,21 @@ class Comments extends Component
     // #[On('comment-posted')]
     public function render()
     {
-        $comments = Comment::where('post_id', $this->post->id)
-        ->approved()
-        ->topLevel()
-        ->with(['user','replies.user'])
-        ->latest()
-        ->get();
+        $query = Comment::where('post_id', $this->post->id)
+            ->approved()
+            ->topLevel();
+
+        $totalCount = $query->count();
+
+        $comments = $query->with(['user','replies.user'])
+            ->latest()
+            ->take($this->moreComments)
+            ->get();
 
 
         return view('livewire.blog.comments',[
-            'comments' => $comments
+            'comments' => $comments,
+            'totalCommentsCount' => $totalCount
         ]);
     }
 }
