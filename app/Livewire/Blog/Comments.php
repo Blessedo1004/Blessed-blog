@@ -24,7 +24,7 @@ class Comments extends Component
 
     public array $expandedComments = [];
     
-    public $moreComments = 1;
+    public $moreComments = 5;
 
     public array $repliesPagination = [];
 
@@ -36,12 +36,12 @@ class Comments extends Component
     }
 
     public function loadMoreComments(){
-        $this->moreComments += 1;
+        $this->moreComments += 5;
     }
 
     public function loadMoreReplies($commentId)
     {
-        $this->repliesPagination[$commentId] = ($this->repliesPagination[$commentId] ?? 2) + 2;
+        $this->repliesPagination[$commentId] = ($this->repliesPagination[$commentId] ?? 3) + 3;
     }
 
     public function postComment(){
