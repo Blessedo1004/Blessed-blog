@@ -106,7 +106,7 @@
                                     <span>{{ $post->comments_count  }}  {{Str::plural('comment', $post->comments_count) }}</span>
                                     @if ($post->views_count > 0)
                                         <span class="mx-2">•</span>
-                                        <span>{{ number_format($post->views_count) }} {{ Str::plural('view',$post->views_count) }}</span>
+                                        <span>{{ $post->views_count }} {{ Str::plural('view',$post->views_count) }}</span>
                                         <span class="mx-1">•</span>
                                         <span>{{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read</span>
                                     @endif

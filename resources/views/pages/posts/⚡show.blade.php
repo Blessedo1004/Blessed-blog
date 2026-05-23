@@ -69,7 +69,8 @@ new #[Layout('layouts.public')] class extends Component
 
         $totalRelated = (clone $relatedQuery)->count();
         $relatedPosts = $relatedQuery
-            ->with('user:id,name') // Eager load author name
+            ->with('user:id,name')
+            ->withCount('comments') // Eager load author name
             ->latest()
             ->take($this->perPage)
             ->get(['id', 'title', 'slug', 'featured_image', 'published_at','user_id']);
@@ -188,6 +189,7 @@ new #[Layout('layouts.public')] class extends Component
                                         <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2">{{ $related->title }}</h4>
                                         <p class="text-sm text-gray-500 mt-1">{{ $related->user->name}}</p>
                                         <p class="text-sm text-gray-500 mt-1">{{ $related->published_at->format('M d, Y') }}</p>
+                                        <p class="text-sm text-gray-500 mt-1">{{ $related->comments_count }}   {{Str::plural('comment', $related->comments_count )}}</p>
                                     </div>
                                 </div>
                             </a>
@@ -225,9 +227,16 @@ new #[Layout('layouts.public')] class extends Component
                                         <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     </div>
                                 @endif
-                                <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight">{{ $related->title }}</h4>
-                                <p class="text-sm text-gray-500 mt-1">{{ $related->user->name}}</p>
-                                <p class="text-sm text-gray-500 mt-2">{{ $related->published_at->format('M d, Y') }}</p>
+                    
+                                <h4 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight text-center">{{ $related->title }}</h4>
+                                <div class="flex items-center justify-between">  
+                                    <p class="text-sm text-gray-500 mt-1 flex justify-center items-center">  
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($related->user->name) }}&background=4f46e5&color=fff" alt="{{ $related->user->name }}" class="w-10 h-10 rounded-full mr-3">
+                                        {{ $related->user->name}}
+                                    </p>
+                                    <p class="text-sm text-gray-500 mt-2">{{ $related->published_at->format('M d, Y') }}</p>
+                                    <p class="text-sm text-gray-500 mt-1">{{ $related->comments_count }}   {{Str::plural('comment', $related->comments_count )}}</p>
+                                </div>
                             </a>
                         @empty
                             <p class="text-gray-500 text-sm italic">No related posts found.</p>
