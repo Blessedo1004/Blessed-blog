@@ -1,4 +1,7 @@
 <div class="mt-12 border-t border-gray-200 pt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+        Comments ({{ $totalComments }})
+    </h2>
     <!-- Success Messages -->
     @if (session('comment-success'))
         <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
@@ -303,7 +306,7 @@
                                             wire:click="loadMoreReplies({{ $comment->id }})"
                                             class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-2"
                                         >
-                                            <span>View {{ $allReplies->count() - $visibleCount}} more {{Str::plural('reply',$allReplies->count() > $visibleCount)}}</span>
+                                            <span>View {{ $allReplies->count() - $visibleCount}} more {{Str::plural('reply',$allReplies->count() - $visibleCount)}}</span>
                                             <div wire:loading wire:target="loadMoreReplies({{ $comment->id }})">
                                                 <svg class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

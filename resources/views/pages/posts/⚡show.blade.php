@@ -77,7 +77,7 @@ new #[Layout('layouts.public')] class extends Component
 
         return [
             'relatedPosts' => $relatedPosts,
-            'hasMore' => $totalRelated > $this->perPage,
+            'hasMore' => $totalRelated > $this->perPage && $this->perPage <=10,
         ];
     }
 };
@@ -209,9 +209,7 @@ new #[Layout('layouts.public')] class extends Component
                     </div>
                 </div>
 
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">
-                    Comments ({{ $post->comments_count }})
-                </h2>
+
                 <!-- Comment section -->
                 <livewire:blog.comments :post="$post" />
             </div>

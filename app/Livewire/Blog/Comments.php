@@ -61,8 +61,8 @@ class Comments extends Component
             ->approved()
             ->topLevel();
 
-        // The 'Cursor' logic: only get IDs older than the ones we already have
-        if (!empty($this->commentsIds)) {
+        // only get IDs older than the ones we already have
+        if ($this->commentsIds) {
             $query->where('id', '<', min($this->commentsIds));
         }
 
@@ -266,6 +266,8 @@ class Comments extends Component
             ->latest()
             ->get();
 
+        $totalComments = $this->post->comments()->count();    
+
         // Total count for the 'Load More' button visibility
         $totalCommentsCount = Comment::where('post_id', $this->post->id)
             ->approved()
@@ -276,6 +278,7 @@ class Comments extends Component
             'comments' => $comments,
             'totalCommentsCount' => $totalCommentsCount,
             'moreComments' => count($this->commentsIds),
+            'totalComments' => $totalComments
         ]);
     }
 }
