@@ -15,7 +15,7 @@ new #[Layout('layouts.public')] class extends Component
     {
         $this->post = Post::where('slug', $slug)
             ->where('status', 'published')
-            ->with(['user','categories','tags'])
+            ->with(['user','categories','tags'])->withCount('comments')
             ->firstOrFail();
         
         $this->trackView();
@@ -209,6 +209,9 @@ new #[Layout('layouts.public')] class extends Component
                     </div>
                 </div>
 
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                    Comments ({{ $post->comments_count }})
+                </h2>
                 <!-- Comment section -->
                 <livewire:blog.comments :post="$post" />
             </div>

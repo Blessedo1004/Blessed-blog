@@ -28,7 +28,12 @@ class Comments extends Component
 
     public array $expandedComments = [];
     
-    public $moreComments = 5;
+    // public $moreComments = 5;
+    // public $loadAmount = 5;
+    // public $maxId = null;
+
+    // cursor state
+    public array $commentsIds = [];
 
     public $isCommentEdit = false;
 
@@ -41,10 +46,32 @@ class Comments extends Component
 
     public function mount(Post $post){
         $this->post = $post;
-    }
+        $this->loadMoreComments(); // Initial batch
+    } 
 
+    /*
     public function loadMoreComments(){
-        $this->moreComments += 5;
+        $this->loadAmount += 5;
+    }
+    */
+
+    public function loadMoreComments()
+    {
+        $query = Comment::where('post_id', $this->post->id)
+            ->approved()
+            ->topLevel();
+
+        // The 'Cursor' logic: only get IDs older than the ones we already have
+        if (!empty($this->commentsIds)) {
+            $query->where('id', '<', min($this->commentsIds));
+        }
+
+        $newIds = $query->latest()
+            ->take(5)
+            ->pluck('id')
+            ->toArray();
+
+        array_push($this->commentsIds, ...$newIds);
     }
 
     public function loadMoreReplies($commentId)
@@ -85,6 +112,9 @@ class Comments extends Component
         ]);
 
         $this->newComment = '';
+
+        // Add to cursor list
+        array_unshift($this->commentsIds, $comment->id);
 
         $comment->load(['post', 'user']);
 
@@ -195,11 +225,16 @@ class Comments extends Component
             session()->flash('delete-error', 'You cannot delete this comment');
             return;
         }
+
+        // Remove from cursor list
+        $this->commentsIds = array_diff($this->commentsIds, [$comment->id]);
+
         $comment->delete();
         session()->flash('delete-success', 'Comment deleted Successfully');
     }
 
     // #[On('comment-posted')]
+    /*
     public function render()
     {
         $query = Comment::where('post_id', $this->post->id)
@@ -217,6 +252,30 @@ class Comments extends Component
         return view('livewire.blog.comments',[
             'comments' => $comments,
             'totalCommentsCount' => $totalCount
+        ]);
+    }
+    */
+
+    public function render()
+    {
+        // TRUE CURSOR RENDERING
+        // We only fetch the comments that match our stored IDs.
+        // This ensures the database query is small and stable.
+        $comments = Comment::whereIn('id', $this->commentsIds)
+            ->with(['user', 'replies.user'])
+            ->latest()
+            ->get();
+
+        // Total count for the 'Load More' button visibility
+        $totalCommentsCount = Comment::where('post_id', $this->post->id)
+            ->approved()
+            ->topLevel()
+            ->count();
+
+        return view('livewire.blog.comments', [
+            'comments' => $comments,
+            'totalCommentsCount' => $totalCommentsCount,
+            'moreComments' => count($this->commentsIds),
         ]);
     }
 }
