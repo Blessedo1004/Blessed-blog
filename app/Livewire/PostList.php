@@ -10,6 +10,11 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Validate;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SubscriberEmailVerificationMail;
+use Illuminate\Support\Facades\Cache;
 
 class PostList extends Component
 {
@@ -17,6 +22,9 @@ class PostList extends Component
 
     #[Url(as: 'q')]
     public string $search = '';
+
+    #[Validate('required|string|email|unique:subscribers,email')]    
+    public string $email;
 
     #[Url(as: 'category')]
     public string $selectedCategory = '';
@@ -88,5 +96,23 @@ class PostList extends Component
         $this->selectedCategory = '';
         $this->selectedTag = '';
         $this->resetPage();
+    }
+
+    public function sendCode (){
+        $this->validate();
+
+        $existingCode = Cache::get("verify-email-token-{$this->email}");
+
+        if($existingCode){
+            Cache::forget("verify-email-for-{$existingCode}");
+            Cache::forget("verify-email-token-{$this->email}");
+       }
+
+        $code = Str::random(6);
+        Cache::put("verify-email-for-{$code}", $this->email, 15 * 60);
+        Cache::put("verify-email-token-{$this->email}", $code, 15 * 60);
+        Mail::to($this->email)->send(new SubscriberEmailVerificationMail($code));
+        session()->flash('email', $this->email);
+        $this->redirect(route('verify-email'), navigate:true);
     }
 }

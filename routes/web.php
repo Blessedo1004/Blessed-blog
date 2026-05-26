@@ -7,8 +7,11 @@ Route::get('/', PostList::class)->name('home');
 
 Route::livewire('/dashboard', 'pages::dashboard')->middleware('auth', 'verified')->name('dashboard');
 
-Route::get('/blog',PostList::class)->name('blog.index');
 Route::livewire('/blog/{slug}', 'pages::posts.show')->name('blog.show');
+
+Route::livewire('/email-verify', 'email-verification')->name('verify-email');
+
+Route::livewire('/unsubscribe/{email}', 'unsubscribe')->name('unsubscribe');
 
 Route::middleware('auth')->group(function(){
     Route::livewire('/posts','pages::posts.index')

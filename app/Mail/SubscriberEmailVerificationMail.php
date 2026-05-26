@@ -9,18 +9,18 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Comment;
 
-class CommentNotification extends Mailable implements ShouldQueue
+class SubscriberEmailVerificationMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+    public $code;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public Comment $comment)
+    public function __construct($code)
     {
-        //
+        $this->code = $code;
     }
 
     /**
@@ -29,7 +29,7 @@ class CommentNotification extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Comment Notification',
+            subject: 'Subscriber Email Verification Mail',
         );
     }
 
@@ -39,7 +39,7 @@ class CommentNotification extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.comment-notification',
+            view: 'emails.subscriber-email-verification',
         );
     }
 

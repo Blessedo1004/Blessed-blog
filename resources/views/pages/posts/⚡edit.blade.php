@@ -6,6 +6,9 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Category;
 use Livewire\Attributes\Validate;
+use App\Models\Subscriber;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewsLetterMail;
 new class extends Component
 {
     use WithFileUploads;
@@ -95,6 +98,16 @@ new class extends Component
         $this->post->tags()->sync($this->selectedTags);
 
 
+        
+        if ($this->status === 'published') {
+            $subscribers = Subscriber::get(['id', 'email']);
+            if($subscribers){
+                foreach($subscribers as $subscriber){
+                    $email = $subscriber->email;
+                    Mail::to($email)->send(new NewsLetterMail($this->post, $email));
+                }
+            }
+        }
         session()->flash('success', 'Post updated successfully!');
         
         $this->redirect(route('posts.index'), navigate: true);

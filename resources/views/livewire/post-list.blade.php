@@ -6,6 +6,18 @@
             <p class="mt-2 text-lg text-gray-600">Thoughts, ideas, and stories from our team</p>
         </div>
 
+            <!-- Success Messages -->
+        @if (session('subscribe-success'))
+            <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
+                <p class="text-sm text-green-800">{{ session('subscribe-success') }}</p>
+            </div>
+        @endif
+
+        @if (session('unsubscribe-success'))
+            <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4" wire:transition>
+                <p class="text-sm text-green-800">{{ session('unsubscribe-success') }}</p>
+            </div>
+        @endif
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Sidebar -->
             <aside class="lg:col-span-1">
@@ -147,6 +159,46 @@
         <!-- Pagination -->
         <div class="mt-8">
             {{ $posts->links() }}
+        </div>
+
+        <!-- Newsletter Subscription -->
+        <div class="mt-16 bg-indigo-600 rounded-2xl overflow-hidden shadow-xl">
+            <div class="px-6 py-12 sm:px-12 sm:py-16 lg:flex lg:items-center lg:justify-between">
+                <div class="lg:w-0 lg:flex-1">
+                    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        Subscribe for our newsletter
+                    </h2>
+                    <p class="mt-4 max-w-3xl text-lg text-indigo-100">
+                        Get the latest posts, ideas, and stories delivered directly to your inbox. Stay updated with our team.
+                    </p>
+                </div>
+                <div class="mt-12 lg:mt-0 lg:ml-8">
+                    <form wire:submit="sendCode">
+                        <div class="sm:flex">
+                            <label for="email-address" class="sr-only">Email address</label>
+                            <input id="email-address" name="email-address" type="email" autocomplete="email" required 
+                                wire:model.live.debounce.500ms="email"
+                                class="w-full rounded-md border-white px-5 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 text-gray-900" 
+                                placeholder="Enter your email">
+                            <button type="submit" 
+                                class="mt-3 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-500 px-5 py-3 text-base font-medium text-white hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600 sm:mt-0 sm:ml-3 sm:w-auto sm:flex-shrink-0"
+                                wire:loading.attr="disabled"
+                                >
+
+                                <span wire:loading.remove wire:target="sendCode">Subscribe</span>
+                                <span wire:loading wire:target="sendCode">Please wait....</span>
+                            </button>
+                        </div>
+                        @error('email')
+                            <p class="mt-2 text-sm text-red-200">{{ $message }}</p>
+                        @enderror
+                    </form>
+                    <p class="mt-3 text-sm text-indigo-100">
+                        We care about the protection of your data. Read our 
+                        <a href="#" class="font-medium text-white underline">Privacy Policy.</a>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

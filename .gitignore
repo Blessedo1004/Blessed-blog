@@ -21,3 +21,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+comment_replies_pagination.md
+true_cursor_pagination.md

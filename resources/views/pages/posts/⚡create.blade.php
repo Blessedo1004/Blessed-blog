@@ -6,6 +6,9 @@ use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
 use Livewire\WithFileUploads;
+use App\Models\Subscriber;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewsLetterMail;
 
 new class extends Component
 {
@@ -67,6 +70,16 @@ new class extends Component
 
         if (!empty($this->selectedTags)) {
             $post->tags()->attach($this->selectedTags);
+        }
+
+        if ($this->status === 'published') {
+            $subscribers = Subscriber::get(['id', 'email']);
+            if($subscribers){
+                foreach($subscribers as $subscriber){
+                    $email = $subscriber->email;
+                    Mail::to($email)->send(new NewsLetterMail($post, $email));
+                }
+            }
         }
         
         session()->flash('success','Post created successfully!');

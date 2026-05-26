@@ -96,7 +96,7 @@ new #[Layout('layouts.public')] class extends Component
                 <article>
                     <!-- Back link -->
                     <div class="mb-6">
-                        <a href="{{ route('blog.index') }}" wire:navigate class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                        <a href="{{ route('home') }}" wire:navigate class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
                             ← Back to posts
                         </a>
                     </div>
@@ -131,7 +131,7 @@ new #[Layout('layouts.public')] class extends Component
                                     <span class="text-sm font-medium text-gray-500">Categories:</span>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($post->categories as $category)
-                                            <a href="{{ route('blog.index', ['category' => $category->slug]) }}" wire:navigate class="px-3 py-1 text-sm font-semibold rounded-full text-white hover:opacity-80 transition" style="background-color: {{ $category->color }}">
+                                            <a href="{{ route('home', ['category' => $category->slug]) }}" wire:navigate class="px-3 py-1 text-sm font-semibold rounded-full text-white hover:opacity-80 transition" style="background-color: {{ $category->color }}">
                                                 {{ $category->name }}
                                             </a>
                                         @endforeach
@@ -144,7 +144,7 @@ new #[Layout('layouts.public')] class extends Component
                                     <span class="text-sm font-medium text-gray-500">Tags:</span>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($post->tags as $tag)
-                                            <a href="{{ route('blog.index', ['tag' => $tag->slug]) }}" wire:navigate class="text-sm text-indigo-600 hover:text-indigo-800">
+                                            <a href="{{ route('home', ['tag' => $tag->slug]) }}" wire:navigate class="text-sm text-indigo-600 hover:text-indigo-800">
                                                 #{{ $tag->name }}
                                             </a>
                                         @endforeach
