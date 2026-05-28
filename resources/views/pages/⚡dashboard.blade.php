@@ -253,7 +253,7 @@ new class extends Component {
 <script>
 
     const displayData = () => {
-                const ctx = document.getElementById('viewsChart');
+        const ctx = document.getElementById('viewsChart');
         const chartDataEl = document.getElementById('viewsChartData');
 
         // read data from data attributes
@@ -301,6 +301,6 @@ new class extends Component {
     }
     document.addEventListener('livewire:navigated', displayData);
 
-    window.addEventListener('load', displayData);
+    window.addEventListener('load', displayData());
 </script>
 </div>
