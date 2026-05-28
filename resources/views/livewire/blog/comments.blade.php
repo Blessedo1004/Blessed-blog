@@ -93,7 +93,9 @@
     <!-- Comments List -->
     <div class="space-y-6">
         @forelse($comments as $comment)
-            <div wire:key="comment-{{ $comment->id }}" class="bg-white rounded-lg border border-gray-200 p-6">
+            <div wire:key="comment-{{ $comment->id }}" id="comment-{{ $comment->id }}" 
+                 class="bg-white rounded-lg border transition-all duration-500 p-6 @if($highlightedId === $comment->id) bg-indigo-50 border-indigo-200 shadow-sm @else border-gray-200 @endif" 
+                 wire:transition>
                 <!-- Comment Header -->
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center">
@@ -248,7 +250,8 @@
                                 @endphp
 
                                 @foreach($visibleReplies as $reply)
-                                    <div wire:key="reply-{{ $reply->id }}" class="bg-gray-50 rounded-lg p-4">
+                                    <div wire:key="reply-{{ $reply->id }}" id="comment-{{ $reply->id }}" 
+                                         class="rounded-lg p-4 transition-all duration-500 @if($highlightedId === $reply->id) bg-indigo-50 border border-indigo-200 @else bg-gray-50 @endif">
                                         <div class="flex items-start justify-between mb-3">
                                             <div class="flex items-center">
                                                 <img 

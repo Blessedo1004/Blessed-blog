@@ -41,12 +41,38 @@ class Comments extends Component
 
     public array $repliesPagination = [];
 
+    public ?int $highlightedId = null;
+
     #[Validate('required|string|min:3|max:1000')]
     public string $replyContent = '';
 
     public function mount(Post $post){
         $this->post = $post;
-        $this->loadMoreComments(); // Initial batch
+        
+        $targetId = request()->query('c');
+        if ($targetId) {
+            $this->highlightedId = (int) $targetId;
+            $targetComment = Comment::find($targetId);
+            if ($targetComment) {
+                $topLevelId = $targetComment->parent_id ?: $targetComment->id;
+                
+                if ($targetComment->parent_id) {
+                    $this->repliesFor = $targetComment->parent_id;
+                    // Ensure we show enough replies to see this one
+                    $this->repliesPagination[$targetComment->parent_id] = 999; // Show all for deep link
+                }
+
+                $this->loadMoreComments();
+                
+                if (!in_array($topLevelId, $this->commentsIds)) {
+                    array_unshift($this->commentsIds, $topLevelId);
+                }
+            } else {
+                $this->loadMoreComments();
+            }
+        } else {
+            $this->loadMoreComments();
+        }
     } 
 
     /*
@@ -115,6 +141,8 @@ class Comments extends Component
 
         // Add to cursor list
         array_unshift($this->commentsIds, $comment->id);
+        
+        $this->highlightedId = $comment->id;
 
         $comment->load(['post', 'user']);
 
@@ -211,6 +239,8 @@ class Comments extends Component
         $this->replyingTo = null;
         $this->repliesFor = $parentId;
         $this->replyContent = '';
+        
+        $this->highlightedId = $comment->id;
 
         $comment->load(['post', 'user']);
         // $this->dispatch('comment-posted');

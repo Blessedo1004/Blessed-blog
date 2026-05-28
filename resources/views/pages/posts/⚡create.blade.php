@@ -134,7 +134,7 @@ new class extends Component
                 <p class="mt-1 text-sm text-gray-500">This will appear in post previews and search results</p>
             </div>
 
-                        <!-- Featured Image -->
+            <!-- Featured Image -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">
                     Featured Image
