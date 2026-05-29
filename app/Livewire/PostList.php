@@ -20,7 +20,7 @@ class PostList extends Component
 {
     use WithPagination;
 
-    #[Url(as: 'q')]
+    #[Url(as: 'search')]
     public string $search = '';
 
     #[Validate('required|string|email|unique:subscribers,email')]    
@@ -53,18 +53,18 @@ class PostList extends Component
         ->latest('published_at')
         ->paginate(10);
 
-        if($this->search){
+        if(trim($this->search)){
             $searchedPosts = Post::where('status','published')->select(['id','title','slug'])
             ->where(function ($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%')
-                    ->orWhere('content', 'like', '%'.$this->search.'%')
-                    ->orWhere('excerpt', 'like', '%'.$this->search.'%');
+                    $q->where('title', 'like', '%'.trim($this->search).'%')
+                    ->orWhere('content', 'like', '%'.trim($this->search).'%')
+                    ->orWhere('excerpt', 'like', '%'.trim($this->search).'%');
                 })->paginate(10)->onEachSide(0);
 
                 $this->showSearchResults = true;
         }
 
-        else if($this->search === ''){
+        else {
             $this->showSearchResults = false;
         }
 

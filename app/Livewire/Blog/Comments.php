@@ -320,7 +320,7 @@ class Comments extends Component
         // We only fetch the comments that match our stored IDs.
         // This ensures the database query is small and stable.
         $comments = Comment::whereIn('id', $this->commentsIds)
-            ->with(['user', 'replies.user'])
+            ->with(['user', 'replies.user', 'replies.parent.user'])
             ->latest()
             ->get();
 

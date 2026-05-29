@@ -120,7 +120,20 @@
                                     <span>{{ $post->user->name }}</span>
                                 </div>
 
-                                <div class="flex items-center text-sm text-gray-500 mb-3">
+                                @if($post->categories->count() > 0)
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-medium text-gray-500">Categories:</span>
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach($post->categories as $category)
+                                                <a href="{{ route('home', ['category' => $category->slug]) }}" wire:navigate class="px-3 py-1 text-sm font-semibold rounded-full text-white hover:opacity-80 transition" style="background-color: {{ $category->color }}">
+                                                    {{ $category->name }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <div class="flex items-center text-sm text-gray-500 mb-3 mt-3">
                                     <span>{{ $post->comments_count  }}  {{Str::plural('comment', $post->comments_count) }}</span>
                                     @if ($post->views_count > 0)
                                         <span class="mx-2">•</span>
