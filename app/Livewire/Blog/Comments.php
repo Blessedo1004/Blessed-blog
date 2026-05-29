@@ -58,8 +58,16 @@ class Comments extends Component
                 
                 if ($targetComment->parent_id) {
                     $this->repliesFor = $targetComment->parent_id;
-                    // Ensure we show enough replies to see this one
-                    $this->repliesPagination[$targetComment->parent_id] = 999; // Show all for deep link
+                    
+                    // Calculate exactly how many replies we need to show to reach the target
+                    $allReplyIds = Comment::where('parent_id', $targetComment->parent_id)
+                        ->orderBy('updated_at', 'desc')
+                        ->pluck('id')
+                        ->toArray();
+                        
+                    $position = array_search((int)$targetId, $allReplyIds);
+                    $count = ($position !== false) ? max(3, $position + 1) : 3;
+                    $this->repliesPagination[$targetComment->parent_id] = array_slice($allReplyIds, 0, $count);
                 }
 
                 $this->loadMoreComments();
@@ -99,10 +107,29 @@ class Comments extends Component
 
         array_push($this->commentsIds, ...$newIds);
     }
-
     public function loadMoreReplies($commentId)
     {
-        $this->repliesPagination[$commentId] = ($this->repliesPagination[$commentId] ?? 3) + 3;
+        $query = Comment::where('parent_id', $commentId)->approved();
+
+        // only get IDs older than the ones we already have
+        if (isset($this->repliesPagination[$commentId]) && !empty($this->repliesPagination[$commentId])) {
+            $query->where('id', '<', min($this->repliesPagination[$commentId]));
+        }
+
+        $newIds = $query->latest()
+            ->take(3)
+            ->pluck('id')
+            ->toArray();
+
+        $this->repliesPagination[$commentId] = array_merge($this->repliesPagination[$commentId] ?? [], $newIds);
+    }
+
+    public function showReplies($commentId)
+    {
+        $this->repliesFor = $commentId;
+        if (!isset($this->repliesPagination[$commentId])) {
+            $this->loadMoreReplies($commentId);
+        }
     }
 
     public function cancelEdit()
@@ -176,11 +203,6 @@ class Comments extends Component
     }
 
 
-    public function showReplies($commentId)
-    {
-        $this->repliesFor = $commentId;
-    }
-
     public function hideReplies()
     {
         $this->repliesFor = null;
@@ -241,6 +263,12 @@ class Comments extends Component
         $this->replyContent = '';
         
         $this->highlightedId = $comment->id;
+
+        // Add the new reply to the visible list
+        if (!isset($this->repliesPagination[$parentId])) {
+            $this->repliesPagination[$parentId] = [];
+        }
+        array_unshift($this->repliesPagination[$parentId], $comment->id);
 
         $comment->load(['post', 'user']);
         // $this->dispatch('comment-posted');

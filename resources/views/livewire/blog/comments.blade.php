@@ -244,9 +244,10 @@
                             <!-- Actual Replies List -->
                             <div class="mt-6 ml-8 space-y-4 border-l-2 border-gray-200 pl-6" wire:transition>
                                 @php
-                                    $visibleCount = $repliesPagination[$comment->id] ?? 3;
+                                    $targetRepliesIds = $repliesPagination[$comment->id] ?? [];
+                                    $visibleCount = count($targetRepliesIds);
                                     $allReplies = $comment->replies->sortByDesc('updated_at');
-                                    $visibleReplies = $allReplies->take($visibleCount);
+                                    $visibleReplies = $allReplies->whereIn('id', $targetRepliesIds);
                                 @endphp
 
                                 @foreach($visibleReplies as $reply)

@@ -176,7 +176,7 @@ new #[Layout('layouts.public')] class extends Component
                     <h3 class="text-xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">Related Posts</h3>
                     <div class="space-y-6">
                         @forelse($relatedPosts as $related)
-                            <a href="{{ route('blog.show', $related->slug) }}" wire:navigate class="group block">
+                            <a href="{{ route('blog.show', $related->slug) }}" wire:navigate class="group block" wire:transition>
                                 <div class="flex gap-4">
                                     @if($related->featured_image)
                                         <img src="{{ asset('storage/'.$related->featured_image) }}" class="w-24 h-24 object-cover rounded-lg shrink-0">
@@ -220,7 +220,7 @@ new #[Layout('layouts.public')] class extends Component
                     <h3 class="text-xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">Related Posts</h3>
                     <div class="space-y-8">
                         @forelse($relatedPosts as $related)
-                            <a href="{{ route('blog.show', $related->slug) }}" wire:navigate class="group block">
+                            <a href="{{ route('blog.show', $related->slug) }}" wire:navigate class="group block" wire:transition>
                                 @if($related->featured_image)
                                     <img src="{{ asset('storage/'.$related->featured_image) }}" class="w-full h-40 object-cover rounded-lg mb-3 group-hover:opacity-90 transition-opacity">
                                 @else

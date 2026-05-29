@@ -36,7 +36,7 @@
                                 </svg>
                             </div>
                             @forelse ($searchedPosts as $searchedPost)
-                               <a href="{{ route('blog.show', $searchedPost->slug) }}" class="block rounded-lg px-4 py-3 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                               <a href="{{ route('blog.show', $searchedPost->slug) }}" class="block rounded-lg px-4 py-3 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" wire:transition>
                                    <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $searchedPost->title }}</h3>
                                </a>
                             @empty
@@ -98,7 +98,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @forelse($posts as $post)
                         <article wire:key="post-{{ $post->id }}"
-                            class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200">
+                            class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200" wire:transition>
                             @if($post->featured_image)
                                 <a href="{{ route('blog.show', $post->slug) }}" wire:navigate>
                                     <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}"
